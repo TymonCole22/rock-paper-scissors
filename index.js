@@ -1,40 +1,98 @@
+const buttonSection = document.querySelector(".button-section");
+
+const buttonRock = document.createElement('button');
+buttonRock.textContent = "Rock";
+buttonSection.appendChild(buttonRock);
+
+const buttonPaper = document.createElement('button');
+buttonPaper.textContent = "Paper";
+buttonSection.appendChild(buttonPaper);
+
+const buttonScissors = document.createElement('button');
+buttonScissors.textContent = "Scissors";
+buttonSection.appendChild(buttonScissors);
+
+const buttons = document.querySelectorAll('button');
+
+const playerScoreText = document.querySelector(".player-score");
+playerScoreText.textContent = 0;
+const computerScoreText = document.querySelector(".computer-score");
+computerScoreText.textContent = 0;
+
+let scorePlayer = 0;
+let scoreComputer = 0;
+
+const playerChoice = document.querySelector(".player-choice");
+const computerChoice = document.querySelector(".computer-choice");
+
+buttons.forEach((button) => {
+    button.classList.add("btn");
+    button.addEventListener('click', () => {
+        playGame(button.textContent);
+    });
+});
+
+
 function getRandNum() {
     return Math.floor((Math.random() * 3) + 1);
 }
 
 function getComputerChoice() {
     let num = getRandNum();
-    let computerChoice = "";
+    let choice = "";
 
     switch(num) {
         case 1: 
-            computerChoice = "rock";
+            choice = "rock";
             break;
         case 2: 
-            computerChoice = "paper";
+            choice = "paper";
             break;
         case 3:
-            computerChoice = "scissors";
+            choice = "scissors";
     }
-    return computerChoice;
-}
-
-function getUserChoice() {
-    let userChoice = prompt("Enter your choice: rock, paper, or scissors?");
-    userChoice.toLowerCase();
-
-    if(userChoice !== "rock" && userChoice !== "paper" && userChoice !== "scissors") {
-        console.log("incorrect choice, try again");
-    }
-    else {
-        return userChoice;
-    }
+    return choice;
 }
 
 function compareChoices(playerSelection, computerSelection) {
     let choices = ["rock", "paper", "scissors"];
     let playerIndex = choices.indexOf(playerSelection);
     let computerIndex = choices.indexOf(computerSelection);
+
+    playerChoice.style.backgroundSize = "100%";
+    computerChoice.style.backgroundSize = "100%";
+
+    switch(computerSelection) {
+        case 'rock':
+            computerChoice.style.backgroundImage = "url('rock.png')";
+            break;
+
+        case 'paper':
+            computerChoice.style.backgroundImage = "url('paper.png')";
+            break;
+
+        case 'scissors':
+            computerChoice.style.backgroundImage = "url('scissors.png')";
+            break;
+        default:
+            console.log('incorrect');
+    }
+
+    switch(playerSelection) {
+        case 'rock':
+            playerChoice.style.backgroundImage = "url('rock.png')";
+            break;
+
+        case 'paper':
+            playerChoice.style.backgroundImage = "url('paper.png')";
+            break;
+
+        case 'scissors':
+            playerChoice.style.backgroundImage = "url('scissors.png')";
+            break;
+        default:
+            console.log('incorrect');
+    }
 
     console.log(`The player selected: ${playerSelection}`);
     console.log(`The computer selected: ${computerSelection}`);
@@ -50,33 +108,44 @@ function compareChoices(playerSelection, computerSelection) {
     }
 }
 
-function playGame() {
-    let playerSelection = getUserChoice();
-    let computerSelection = getComputerChoice();
-
-    let winner = compareChoices(playerSelection, computerSelection);
-    if(winner === "tie") {
-        console.log("The game ends in a tie!");
+function updateScore(winner) {
+    if(winner === "computer") {
+        scoreComputer += 1;
+        computerScoreText.textContent = scoreComputer;
+    } else if (winner === "player") {
+        scorePlayer += 1;
+        playerScoreText.textContent = scorePlayer;
     } else {
-        console.log("The games end with the winner being the: " + winner);
-        return winner;
+        return 0;
     }
 }
 
-let playerScore = 0;
-let computerScore = 0;
+function playGame(textContent) {
+    let playerSelection = textContent.toLowerCase();
+    let computerSelection = getComputerChoice();
 
-for(let i = 0; i <= 5; i++) {
-    let winner = playGame();
+    let winner = compareChoices(playerSelection, computerSelection);
 
-    if(winner === "player") {
-        playerScore += 1;
-    } else if (winner === "computer") {
-        computerScore += 1;
-    }
-    console.log(`Scores: player score: ${playerScore} - computer score: ${computerScore}`);
-    
-    if(i === 5) {
-        console.log(`The final score is player score: ${playerScore} to computer score : ${computerScore}`);
+    updateScore(winner);
+
+    const results = document.querySelector(".results");
+    const p = document.createElement("p");
+
+    if(scorePlayer === 5 || scoreComputer === 5) {
+        if(scorePlayer > scoreComputer) {
+            p.textContent = "The player wins the game";
+        } else {
+            p.textContent = "The computer wins the game";
+        }
+        results.appendChild(p);
+        // reset score and score display
+        scorePlayer = 0;
+        scoreComputer = 0;
+        playerScoreText.textContent = scorePlayer;
+        computerScoreText.textContent = scoreComputer;
+        playerChoice.style.backgroundImage = "url('logo.png')";
+        computerChoice.style.backgroundImage = "url('logo.png')";
+        p.textContent = "";
+        return 0;
     }
 }
